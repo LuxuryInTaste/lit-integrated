@@ -30,7 +30,7 @@ jobs:
           app_location: "./frontend"             # Path to your app source
           api_location: "./api"                      # Leave empty if you don't have real APIs
           output_location: "frontend/dist"      # Correct output path
-          app_build_command: "cd frontend && npm install && npm run build"   # <--- Fixed this
+          app_build_command: "npm install && npm run build"   # <--- Fixed this
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
