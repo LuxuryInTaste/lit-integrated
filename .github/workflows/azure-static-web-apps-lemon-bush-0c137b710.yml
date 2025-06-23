@@ -11,6 +11,7 @@ on:
 
 jobs:
   build_and_deploy_job:
+    environment: production
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
@@ -20,12 +21,14 @@ jobs:
           submodules: true
           lfs: false
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+      - name: Debug: Check if AZURE_STATIC_WEB_APPS_API_TOKEN is set
+        run: |
+          if [ -z "${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}" ]; then
+            echo "❌ Token is missing or not passed to workflow."
+            exit 1
+          else
+            echo "✅ Token is set and available."
+          fi
 
       - name: Build And Deploy
         id: builddeploy
@@ -40,6 +43,7 @@ jobs:
           api_location: "./api" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+          
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
